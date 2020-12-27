@@ -522,7 +522,7 @@ appropriately, e.g. to `python-indent-offset' for `python-mode'."
                                                (+ (indent-depth) (car (syntax-ppss))))))))
                                   (pcase enclosing-list-depth
                                     (0 (+ list-depth (indent-depth)))
-                                    (_  (1+ enclosing-list-depth)))))))
+                                    (_  (+ enclosing-list-depth list-depth)))))))
                 (comment-p ()
                            ;; This macro should only be used after `parse-syntax'.
                            `(or comment-level-p (looking-at-p (rx (or (syntax comment-start)
