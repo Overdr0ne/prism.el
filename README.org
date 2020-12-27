@@ -193,6 +193,11 @@ Here's an example that the author finds pleasant (seen in the first screenshot):
 :TOC:      0
 :END:
 
+** 0.2.3
+
+*Fixed*
++  Depth of logically continued lines (e.g. in Python, an expression split across lines) and physically continued lines (e.g. in Shell, a statement split across backslash-continued lines) in =prism-whitespace-mode=.
+
 ** 0.2.2
 
 *Fixed*
