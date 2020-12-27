@@ -503,10 +503,7 @@ appropriately, e.g. to `python-indent-offset' for `python-mode'."
                                          (backward-sexp 1)
                                          (+ (nth 0 (syntax-ppss)) (indent-depth))))
                                       (t (indent-depth))))
-                             (_ (save-excursion
-                                  ;; Exit lists back to depth 0.
-                                  (goto-char (scan-lists (point) -1 (nth 0 (syntax-ppss))))
-                                  (+ list-depth (indent-depth))))))
+                             (_ (+ list-depth (indent-depth)))))
                 (comment-p ()
                            ;; This macro should only be used after `parse-syntax'.
                            `(or comment-level-p (looking-at-p (rx (or (syntax comment-start)
