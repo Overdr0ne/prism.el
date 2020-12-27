@@ -503,7 +503,22 @@ appropriately, e.g. to `python-indent-offset' for `python-mode'."
                                          (backward-sexp 1)
                                          (+ (nth 0 (syntax-ppss)) (indent-depth))))
                                       (t (indent-depth))))
-                             (_ (+ list-depth (indent-depth)))))
+                             ;; This handles the case of code that is both enclosed in a
+                             ;; character-delimited list and indented on a new line within that
+                             ;; list to match the list's opening indentation (e.g. in Python,
+                             ;; when an if's condition is parenthesized and split across lines).
+                             (_ (let* ((current-depth (car (syntax-ppss)))
+                                       (enclosing-list-depth
+                                        (pcase current-depth
+                                          (0 0)
+                                          (_ (save-excursion
+                                               ;; Escape current list and return the level of
+                                               ;; the enclosing list plus its indent depth.
+                                               (goto-char (scan-lists (point) -1 current-depth))
+                                               (+ (indent-depth) (car (syntax-ppss))))))))
+                                  (pcase enclosing-list-depth
+                                    (0 (+ list-depth (indent-depth)))
+                                    (_  (1+ enclosing-list-depth)))))))
                 (comment-p ()
                            ;; This macro should only be used after `parse-syntax'.
                            `(or comment-level-p (looking-at-p (rx (or (syntax comment-start)
