@@ -483,11 +483,15 @@ appropriately, e.g. to `python-indent-offset' for `python-mode'."
                               `(-setq (list-depth _ _ in-string-p comment-level-p _ _ _ comment-or-string-start)
                                  (syntax-ppss)))
                 (indent-depth ()
-                              `(cond ((save-excursion
-                                        (forward-line -1)
-                                        (looking-at-p (rx (1+ nonl) "\\" eol)))
-                                      (/ (current-indentation) (* 2 prism-whitespace-indent-offset)))
-                                     (t (/ (current-indentation) prism-whitespace-indent-offset))))
+                              `(or (save-excursion
+                                     (forward-line -1)
+                                     (when (looking-at-p (rx (1+ nonl) "\\" eol))
+                                       ;; Found backslask-continued line: move
+                                       ;; to where the continued line starts.
+                                       (cl-loop do (forward-line -1)
+                                                while (looking-at-p (rx (1+ nonl) "\\" eol)))
+                                       (/ (current-indentation) prism-whitespace-indent-offset)))
+                                   (/ (current-indentation) prism-whitespace-indent-offset)))
                 (depth-at ()
                           ;; Yes, this is entirely too complicated--just like Python's syntax in
                           ;; comparison to Lisp.  But, "Eww, all those parentheses!"  they say.
