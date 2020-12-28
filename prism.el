@@ -490,6 +490,7 @@ appropriately, e.g. to `python-indent-offset' for `python-mode'."
                                        ;; to where the continued line starts.
                                        (cl-loop do (forward-line -1)
                                                 while (looking-at-p (rx (1+ nonl) "\\" eol)))
+                                       (forward-line 1)  ; Yes, go back down a line.
                                        (/ (current-indentation) prism-whitespace-indent-offset)))
                                    (/ (current-indentation) prism-whitespace-indent-offset)))
                 (depth-at ()
