@@ -511,14 +511,15 @@ appropriately, e.g. to `python-indent-offset' for `python-mode'."
                              ;; character-delimited list and indented on a new line within that
                              ;; list to match the list's opening indentation (e.g. in Python,
                              ;; when an if's condition is parenthesized and split across lines).
-                             (_ (let ((enclosing-list-depth
-                                       (pcase list-depth
-                                         (0 0)
-                                         (_ (save-excursion
-                                              ;; Escape current list and return the level of
-                                              ;; the enclosing list plus its indent depth.
-                                              (goto-char (scan-lists (point) -1 list-depth))
-                                              (+ (indent-depth) (car (syntax-ppss))))))))
+                             (_ (let* ((current-depth (car (syntax-ppss)))  ; This `syntax-ppss' call *is* necessary!
+                                       (enclosing-list-depth
+                                        (pcase current-depth
+                                          (0 0)
+                                          (_ (save-excursion
+                                               ;; Escape current list and return the level of
+                                               ;; the enclosing list plus its indent depth.
+                                               (goto-char (scan-lists (point) -1 current-depth))
+                                               (+ (indent-depth) (car (syntax-ppss))))))))
                                   (pcase enclosing-list-depth
                                     (0 (+ list-depth (indent-depth)))
                                     (_  (+ enclosing-list-depth list-depth)))))))
