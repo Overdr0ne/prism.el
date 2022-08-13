@@ -228,7 +228,7 @@ modes."
 
 ;;;###autoload
 (define-minor-mode prism-mode
-  "Disperse lisp forms (and other non-whitespace-sensitive syntax) into a spectrum of colors according to depth.
+  "Disperse Lisp forms into a spectrum of colors according to depth.
 Depth is determined by list nesting.  Suitable for Lisp, C-like
 languages, etc."
   :global nil
@@ -261,7 +261,7 @@ languages, etc."
 
 ;;;###autoload
 (define-minor-mode prism-whitespace-mode
-  "Disperse whitespace-sensitive syntax into a spectrum of colors according to depth.
+  "Disperse whitespace into a spectrum of colors according to depth.
 Depth is determined by indentation and list nesting.  Suitable
 for Python, Haskell, etc."
   :global nil
@@ -681,7 +681,8 @@ appropriately, e.g. to `python-indent-offset' for `python-mode'."
             t))))))
 
 (cl-defun prism-remove-faces (&optional (beg (point-min)))
-  "Remove `prism' faces from buffer.
+  "Remove `prism' faces from buffer from position BEG.
+
 Note a minor bug at the moment: anonymous faces are also
 removed."
   (cl-macrolet ((without-prism-faces (faces)
@@ -717,6 +718,8 @@ removed."
   "Set `prism' faces.  Call after loading a new theme.
 Call also when COLORS has been set to a list of faces and those
 faces have been modified.
+
+SHUFFLE will randomly assign colors if t.
 
 NUM is the number of faces to set, i.e. the depth to make faces
 for.
@@ -911,7 +914,9 @@ arguments to set the same faces."
   (customize-save-variable 'prism-colors prism-colors))
 
 (cl-defun prism-modify-colors (&key num colors desaturations lightens opacities &allow-other-keys)
-  "Return list of NUM COLORS modified according to DESATURATIONS, LIGHTENS, and OPACITIES."
+  "Return list of NUM COLORS.
+
+They may be modified according to DESATURATIONS, LIGHTENS, and OPACITIES."
   (cl-flet ((modify-color (color desaturate lighten opacify)
                           (--> color
                             (if (> desaturate 0)
@@ -942,7 +947,7 @@ arguments to set the same faces."
 
 (defun prism-blend (a b alpha)
   "Return color A blended with color B by amount ALPHA."
-  (if (some #'(lambda (color) (member color '(unspecified "unspecified-fg" "unspecified-bg")))
+  (if (cl-some #'(lambda (color) (member color '(unspecified "unspecified-fg" "unspecified-bg")))
             `(,a ,b))
       nil
     (cl-flet ((blend (a b alpha)
@@ -954,7 +959,7 @@ arguments to set the same faces."
                           (blend ab bb alpha))))))
 
 (defun prism-opacify-name (color percent)
-  "Return color A blended with the background by amount ALPHA."
+  "Return COLOR blended with the background by PERCENT."
   (let ((alpha (/ percent 100.0)))
     (prism-blend color (face-attribute 'default :background) alpha)))
 
@@ -1030,7 +1035,7 @@ Assumes the first `doom' or `solarized' theme found in
 ;; which is defined above.
 
 (defgroup prism nil
-  "Disperse lisp forms into a spectrum of colors according to depth."
+  "Disperse Lisp forms into a spectrum of colors according to depth."
   :group 'font-lock
   :link '(url-link "https://github.com/alphapapa/prism.el"))
 
